@@ -1,0 +1,270 @@
+/* Modern Mobile SaaS Aesthetic (LearnU) */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --bg-main: #f0f2f5; /* Light grey backdrop */
+    --bg-card: #ffffff; /* Pure white cards */
+    --primary: #3b82f6; /* Bright vibrant blue */
+    --primary-hover: #2563eb;
+    --text-main: #1f2937; /* Dark gray */
+    --text-muted: #6b7280; /* Medium gray */
+    --border-light: #e5e7eb;
+    --success: #10b981;
+    --danger: #ef4444;
+    --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.06);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.App {
+    width: 100%;
+    max-width: 420px; /* Restrict to mobile shape */
+    background: var(--bg-main);
+    min-height: 100vh;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1); /* Floating effect on desktop */
+    overflow-x: hidden;
+    padding-bottom: 70px; /* For bottom nav */
+}
+
+.portal-container {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Headers */
+.portal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-top: 1rem;
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.logo-area h1 {
+    font-weight: 800;
+    font-size: 1.8rem;
+    color: var(--primary);
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Cards */
+.glass-card, .form-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-light);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+/* Inputs */
+input, select, textarea, .styled-select, .styled-textarea {
+    background: #f9fafb;
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Buttons */
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    font-family: inherit;
+}
+
+.btn-primary, .btn-save {
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    padding: 1rem;
+    border-radius: 12px;
+    width: 100%;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover, .btn-save:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: var(--text-main);
+    font-weight: 600;
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.btn-secondary:hover {
+    background: #d1d5db;
+}
+
+/* Language Toggle specific to screenshot shape */
+.language-toggle {
+    display: flex;
+    background: #e5e7eb;
+    border-radius: 20px;
+    padding: 3px;
+    align-items: center;
+}
+
+.language-toggle button {
+    background: transparent;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.language-toggle button.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Options List */
+.option-item {
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.option-item.selected {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+.option-letter {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.option-item.selected .option-letter {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.option-text {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.03);
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    padding: 10px;
+    cursor: pointer;
+}
+
+.nav-item.active {
+    color: var(--primary);
+}

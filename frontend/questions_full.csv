@@ -1,0 +1,61 @@
+id,question_en,question_te,option_a_en,option_a_te,option_b_en,option_b_te,option_c_en,option_c_te,option_d_en,option_d_te,correct_option
+1,What is lane width in 400m track?,400మీ ట్రాక్లో లేన్ వెడల్పు ఎంత?,1.10 m,1.10 మీటర్లు,1.20 m,1.20 మీటర్లు,1.22 m,1.22 మీటర్లు,1.25 m,1.25 మీటర్లు,C
+2,Which is not part of heptathlon?,హెప్టాథ్లాన్లో భాగం కానిది ఏది?,100m sprint,100మీ పరుగుపందెం,High jump,ఎత్తు దూకుడు,Javelin throw,జావెలిన్ త్రో,100m hurdles,100మీ అడ్డంకి పందెం,A
+3,Beyond which distance races are not run in lanes?,ఏ దూరం తర్వాత లేన్లలో పరుగులు తీయరు?,200m,200మీ,400m,400మీ,800m,800మీ,1500m,1500మీ,C
+4,Can a hurdle be knocked down unintentionally?,హర్డిల్ అనుకోకుండా పడిపోతే అనుమతించబడుతుందా?,Yes,అవును,No,కాదు,Only one,ఒక్కటి మాత్రమే,Not allowed,అనుమతి లేదు,A
+5,Number of hurdles in 3000m steeplechase?,3000మీ స్టీపుల్చేస్లో హర్డిల్స్ సంఖ్య ఎంత?,24,24,28,28,30,30,36,36,B
+6,Maximum weight of relay baton?,రిలే బాటన్ గరిష్ట బరువు ఎంత?,50g,50 గ్రాములు,60g,60 గ్రాములు,75g,75 గ్రాములు,80g,80 గ్రాములు,A
+7,Athletics is combination of?,అథ్లెటిక్స్ కలయిక ఏమిటి?,Running + Locomotion,పరుగులు + కదలికలు,Running + Jumping,పరుగులు + దూకుడు,Running + Flying,పరుగులు + ఎగరడం,Running + Cruising,పరుగులు + సులభ కదలిక,B
+8,Passing zone length in relay?,రిలేలో పాసింగ్ జోన్ పొడవు ఎంత?,30m,30 మీటర్లు,25m,25 మీటర్లు,20m,20 మీటర్లు,15m,15 మీటర్లు,C
+9,Maximum wind speed allowed?,రికార్డులకు గాలి గరిష్ట వేగం ఎంత?,1 m/s,1 మీ/సెకను,2 m/s,2 మీ/సెకను,3 m/s,3 మీ/సెకను,4 m/s,4 మీ/సెకను,B
+10,Half time in basketball?,బాస్కెట్బాల్ హాఫ్ టైమ్ ఎంత?,10 min,10 నిమిషాలు,15 min,15 నిమిషాలు,20 min,20 నిమిషాలు,5 min,5 నిమిషాలు,B
+11,Who communicates with referee?,రిఫరీతో ఎవరు మాట్లాడతారు?,Manager,మేనేజర్,Captain,కెప్టెన్,Coach,కోచ్,Player,ప్లేయర్,B
+12,Technical foul is given for?,టెక్నికల్ ఫౌల్ కారణం ఏమిటి?,Misconduct,తప్పు ప్రవర్తన,Collision,ఢీకొనడం,Touch,స్పర్శ,Speed,వేగం,A
+13,Free throw time?,ఫ్రీ త్రో సమయం ఎంత?,10 sec,10 సెకండ్లు,7 sec,7 సెకండ్లు,5 sec,5 సెకండ్లు,3 sec,3 సెకండ్లు,C
+14,Cricket less popular country?,క్రికెట్ తక్కువగా ఆడే దేశం ఏది?,West Indies,వెస్ట్ ఇండీస్,Germany,జర్మనీ,New Zealand,న్యూజిలాండ్,England,ఇంగ్లాండ్,B
+15,Distance between wickets?,వికెట్ల మధ్య దూరం ఎంత?,20 yards,20 యార్డులు,22 yards,22 యార్డులు,24 yards,24 యార్డులు,26 yards,26 యార్డులు,B
+16,Dead ball means?,డెడ్ బాల్ అంటే ఏమిటి?,Inactive ball,ఆటలో లేని బంతి,Active ball,ఆటలో ఉన్న బంతి,Fast ball,వేగమైన బంతి,Slow ball,నెమ్మదిగా ఉన్న బంతి,A
+17,Illegal body part in football?,ఫుట్బాల్లో ఉపయోగించరాని భాగం ఏది?,Feet,కాళ్లు,Head,తల,Hands,చేతులు,Chest,ఛాతి,C
+18,Penalty spot distance?,పెనాల్టీ స్పాట్ దూరం ఎంత?,10 yards,10 యార్డులు,11 yards,11 యార్డులు,12 yards,12 యార్డులు,13 yards,13 యార్డులు,B
+19,Goal cannot be scored from?,ఏది నుండి గోల్ సాధ్యం కాదు?,Kickoff,కిక్ ఆఫ్,Corner,కోర్నర్,Goal kick,గోల్ కిక్,Throw in,త్రో ఇన్,D
+20,Strikers are?,స్ట్రైకర్లు ఎవరు?,Forwards,ఫార్వర్డ్స్,Midfielders,మిడ్ ఫీల్డర్స్,Defenders,డిఫెండర్స్,Goalkeepers,గోల్ కీపర్స్,A
+21,Football national championship India?,భారత్ ఫుట్బాల్ జాతీయ చాంపియన్షిప్ ఏది?,AFA Shield,ఏఎఫ్ఏ షీల్డ్,DCM Tournament,డీసీఎం టోర్నమెంట్,Subroto Cup,సుబ్రోటో కప్,Santosh Trophy,సంతోష్ ట్రోఫీ,D
+22,Basketball court size?,బాస్కెట్బాల్ కోర్ట్ పరిమాణం ఎంత?,26x14m,26x14 మీ,28x15m,28x15 మీ,26x15m,26x15 మీ,30x15m,30x15 మీ,B
+23,Marshal duty?,మార్షల్ పని ఏమిటి?,Discipline,శిస్తు,Guide runners,మార్గదర్శనం,Help officials,సహాయం,Control entry,ప్రవేశ నియంత్రణ,D
+24,Volleying means?,వాలీయింగ్ అంటే ఏమిటి?,Kick air,గాల్లో తన్నడం,Ground kick,భూమిపై తన్నడం,Pass,పాస్ చేయడం,Throw,విసరడం,A
+25,Cricket field shape?,క్రికెట్ మైదానం ఆకారం?,Pentagon,పంచభుజం,Rectangle,చతురస్రం,Oval,ఓవల్,Square,చతురస్రం,C
+26,Quick winner method?,త్వరగా విజేత నిర్ణయం విధానం?,Knockout,నాక్ఔట్,League,లీగ్,Combination,కాంబినేషన్,Challenge,చాలెంజ్,A
+27,Low cost tournament?,తక్కువ ఖర్చు టోర్నమెంట్?,Combination,కాంబినేషన్,League,లీగ్,Knockout,నాక్ఔట్,Challenge,చాలెంజ్,C
+28,Knockout disadvantage?,నాక్ఔట్ లోపం ఏమిటి?,Early elimination,త్వరగా బయటకు వెళ్తారు,More time,ఎక్కువ సమయం,More cost,ఎక్కువ ఖర్చు,None,ఏదీ కాదు,A
+29,Matches in league (8 teams)?,8 జట్లు లీగ్ మ్యాచ్లు ఎంత?,20,20,28,28,36,36,40,40,B
+30,Matches in double league?,డబుల్ లీగ్ మ్యాచ్లు ఎంత?,40,40,48,48,56,56,60,60,C
+31,Expensive tournament?,ఖరీదైన టోర్నమెంట్?,Combination,కాంబినేషన్,League,లీగ్,Knockout,నాక్ఔట్,Challenge,చాలెంజ్,B
+32,Best chance for all teams?,అన్ని జట్లకు అవకాశం?,League,లీగ్,Knockout,నాక్ఔట్,Combination,కాంబినేషన్,Challenge,చాలెంజ్,A
+33,Individual tournament?,వ్యక్తిగత టోర్నమెంట్?,League,లీగ్,Knockout,నాక్ఔట్,Challenge,చాలెంజ్,Combination,కాంబినేషన్,C
+34,Not related to test quality?,పరీక్ష నాణ్యతకు సంబంధం లేనిది?,Creativity,సృజనాత్మకత,Validity,ప్రామాణికత,Reliability,నమ్మకత్వం,Objectivity,వాస్తవికత,A
+35,When ball reaches keeper?,బంతి కీపర్ వద్దకు వస్తే?,Let,లెట్,Lost,లాస్ట్,Improper,తప్పు,Dead,డెడ్,D
+36,Outswinger means?,అవుట్స్వింగర్ అంటే?,Leg side,లెగ్ సైడ్,In swing,లోపలికి,Away,దూరంగా,Stop,ఆగిపోతుంది,C
+37,Strike rate?,స్ట్రైక్ రేట్?,Runs/over,ఓవర్కు పరుగులు,Runs/hour,గంటకు,Runs/innings,ఇన్నింగ్స్కు,Runs/100 balls,100 బంతులకు,D
+38,Ranji trophy belongs to?,రంజీ ట్రోఫీ ఏ ఆటకు?,Hockey,హాకీ,Cricket,క్రికెట్,Volleyball,వాలీబాల్,Football,ఫుట్బాల్,B
+39,Assistant referee role?,అసిస్టెంట్ రిఫరీ పని?,Help ref,సహాయం,Score,స్కోర్,Time,సమయం,None,ఏదీ కాదు,A
+40,Throw-in distance?,త్రో ఇన్ దూరం?,10m,10మీ,6m,6మీ,4m,4మీ,2m,2మీ,D
+41,Striker position?,స్ట్రైకర్ స్థానం?,Forward,ముందు,Middle,మధ్య,Back,వెనుక,Goal,గోల్ దగ్గర,A
+42,Penalty spot?,పెనాల్టీ స్పాట్?,10yd,10యార్డులు,11yd,11యార్డులు,12yd,12యార్డులు,13yd,13యార్డులు,B
+43,Volleyball serve?,వాలీబాల్ సర్వ్?,Underarm,అండర్ ఆర్మ్,Overarm,ఓవర్ ఆర్మ్,Both,రెండూ,None,ఏదీ కాదు,C
+44,Kho-Kho players?,ఖో-ఖో ఆటగాళ్లు?,9,9,10,10,11,11,12,12,D
+45,Kabaddi players?,కబడ్డీ ఆటగాళ్లు?,5,5,6,6,7,7,8,8,C
+46,Olympics interval?,ఒలింపిక్స్ ఎంతకాలం?,2yr,2సం,3yr,3సం,4yr,4సం,5yr,5సం,C
+47,National game India?,భారత్ జాతీయ క్రీడ?,Cricket,క్రికెట్,Hockey,హాకీ,Football,ఫుట్బాల్,Kabaddi,కబడ్డీ,B
+48,First Olympics place?,మొదటి ఒలింపిక్స్ ఎక్కడ?,Greece,గ్రీస్,USA,అమెరికా,India,భారత్,China,చైనా,A
+49,Shuttlecock used in?,షటిల్కాక్ ఏ ఆటలో?,Tennis,టెన్నిస్,Badminton,బ్యాడ్మింటన్,Cricket,క్రికెట్,Hockey,హాకీ,B
+50,Boxing ring shape?,బాక్సింగ్ రింగ్ ఆకారం?,Circle,వృత్తం,Square,చతురస్రం,Oval,ఓవల్,Rectangle,చతురస్రం,B
+51,Yoga improves?,యోగా ఏమి మెరుగుపరుస్తుంది?,Strength,శక్తి,Flexibility,లవచికత,Balance,సమతుల్యం,All,అన్నీ,D
+52,Running improves?,పరుగులు ఏమి మెరుగుపరుస్తాయి?,Speed,వేగం,Stamina,శక్తి,Health,ఆరోగ్యం,All,అన్నీ,D
+53,Swimming improves?,ఈత ఏమి మెరుగుపరుస్తుంది?,Lungs,శ్వాసకోశం,Strength,శక్తి,Fitness,ఫిట్నెస్,All,అన్నీ,D
+54,Warm-up important?,వార్మ్-అప్ ముఖ్యమా?,Yes,అవును,No,కాదు,Sometimes,కొన్నిసార్లు,Rare,అప్పుడప్పుడు,A
+55,Cool down helps?,కూల్డౌన్ ఉపయోగం?,Relax,విశ్రాంతి,Recovery,పునరుద్ధరణ,Reduce injury,గాయాలు తగ్గిస్తుంది,All,అన్నీ,D
+56,Balanced diet?,సమతుల ఆహారం?,Only rice,అన్నం మాత్రమే,Only protein,ప్రోటీన్ మాత్రమే,All nutrients,అన్ని పోషకాలు,Only fruits,పండ్లు మాత్రమే,C
+57,Daily exercise?,రోజూ వ్యాయామం?,10min,10ని,20min,20ని,30min,30ని,1hr,1గంట,C
+58,Water importance?,నీటి ప్రాముఖ్యత?,Hydration,దాహం తీర్చడం,Energy,శక్తి,Health,ఆరోగ్యం,All,అన్నీ,D
+59,Sleep needed?,నిద్ర అవసరమా?,Yes,అవును,No,కాదు,Less,తక్కువ,Rare,అప్పుడప్పుడు,A
+60,Fitness goal?,ఫిట్నెస్ లక్ష్యం?,Health,ఆరోగ్యం,Strength,శక్తి,Happiness,సంతోషం,All,అన్నీ,D

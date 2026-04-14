@@ -1,0 +1,57 @@
+test_id,question_en,question_te,option_a,option_b,option_c,option_d,correct_option
+1,What is lane width in 400m track?,400మీ ట్రాక్ లేన్ వెడల్పు ఎంత?,1.10 m,1.20 m,1.22 m,1.25 m,C
+1,Which is not part of heptathlon?,హెప్టాథ్లాన్లో భాగం కానిది?,100m sprint,High jump,Javelin throw,100m hurdles,A
+1,Races beyond which distance are not run in lanes?,ఏ దూరం తర్వాత లేన్లలో పరుగులు తీయరు?,200m,400m,800m,1500m,C
+1,Can hurdle be knocked down unintentionally?,హర్డిల్ అనుకోకుండా పడిపోతే అనుమతి ఉందా?,Yes,No,Only one,Not allowed,A
+1,Number of hurdles in 3000m steeplechase?,3000మీ స్టీపుల్చేస్లో హర్డిల్స్ సంఖ్య?,24,28,30,36,B
+1,Maximum weight of relay baton?,రిలే బాటన్ గరిష్ట బరువు?,50g,60g,75g,80g,A
+1,High jump techniques order?,హైజంప్ టెక్నిక్ క్రమం?,Correct order,Wrong order,Random order,None,B
+1,Athletics combination?,అథ్లెటిక్స్ కలయిక?,Running+Locomotion,Running+Jumping,Running+Flying,Running+Cruising,B
+1,Passing zone length in relay?,రిలే పాసింగ్ జోన్ పొడవు?,30m,25m,20m,15m,C
+1,Max wind speed for record?,రికార్డ్ కోసం గాలి వేగం?,1 m/s,2 m/s,3 m/s,4 m/s,B
+1,Events affected by wind rule?,గాలి ప్రభావం ఉన్న ఈవెంట్లు?,Marathon,100m & Long jump,Shot put,Discus,B
+1,Roll-over movement?,రోల్ ఓవర్ అంటే ఏమిటి?,Jump type,Landing move,Running type,Throwing type,B
+1,Jumps allowed (≤8 athletes)?,8 మందికి జంప్స్ సంఖ్య?,4,6,8,10,B
+1,Shot put steps order?,షాట్పుట్ దశలు?,Correct order,Reverse order,Random,None,B
+1,Poona game?,Poona అని పిలిచిన ఆట?,Badminton,Tennikoit,KhoKho,Kabaddi,A
+1,Match players correctly?,క్రీడాకారులను సరిపోల్చండి?,Correct set,Wrong set,Random,None,A
+1,Basketball equipment?,బాస్కెట్బాల్ పరికరాలు?,Set1,Set2,Set3,Set4,D
+1,Who talks to referee?,ఎవరు రిఫరీతో మాట్లాడతారు?,Manager,Captain,Coach,Player,B
+1,Half time in basketball?,బాస్కెట్బాల్ హాఫ్ టైమ్?,10min,15min,20min,5min,B
+1,Technical foul reason?,టెక్నికల్ ఫౌల్ కారణం?,Misconduct,Collision,Touch,Speed,A
+1,Screen technique used in?,స్క్రీన్ టెక్నిక్ ఏ ఆటలో?,Hockey,Cricket,Volleyball,Handball,A
+1,Identify basketball fouls?,బాస్కెట్బాల్ ఫౌల్స్ ఏవి?,Set1,Set2,Set3,Set4,C
+1,Free throw time?,ఫ్రీ త్రో సమయం?,10s,7s,5s,3s,C
+1,Penalty for technical foul?,టెక్నికల్ ఫౌల్ శిక్ష?,Warning,Two free throws,One free throw,Ball loss,B
+1,Cricket not popular country?,క్రికెట్ తక్కువగా ఆడే దేశం?,West Indies,Germany,New Zealand,England,B
+1,ICC established?,ICC ఎప్పుడు స్థాపించబడింది?,1936,1946,1956,1966,B
+1,Match sports terms?,పదాలను సరిపోల్చండి?,Set1,Set2,Set3,Set4,A
+1,Leg bye runs?,లెగ్ బై రన్స్?,2,4,6,Any,D
+1,Batsman out situations?,బ్యాట్స్మన్ అవుట్ పరిస్థితులు?,Set1,Set2,Set3,Set4,B
+1,Distance between wickets?,వికెట్ల మధ్య దూరం?,20yd,22yd,24yd,26yd,B
+1,Time wasting penalty?,టైమ్ వేస్ట్ చేస్తే?,Run loss,Extra ball,Warning,Card,C
+1,Dead ball meaning?,డెడ్ బాల్ అంటే?,Inactive ball,Active ball,Fast ball,Slow ball,A
+1,Cricket scoring balls?,బాల్స్ సంఖ్య?,90,100,110,120,B
+1,Assistant referee role?,అసిస్టెంట్ రిఫరీ పని?,Help ref,Score,Time,None,A
+1,Football illegal use?,ఫుట్బాల్లో ఉపయోగించరాని భాగం?,Feet,Head,Hands,Chest,C
+1,Penalty spot distance?,పెనాల్టీ స్పాట్ దూరం?,10yd,11yd,12yd,13yd,C
+1,Goal not scored from?,గోల్ సాధ్యం కానిది?,Kickoff,Corner,Goal kick,Throw in,D
+1,Direct free kick fouls?,డైరెక్ట్ ఫౌల్స్?,Set1,Set2,Set3,Set4,A
+1,Throw in distance?,థ్రో ఇన్ దూరం?,10m,6m,4m,2m,D
+1,Match players list?,ప్లేయర్స్ సరిపోల్చండి?,Set1,Set2,Set3,Set4,A
+1,Strikers are?,స్ట్రైకర్లు ఎవరు?,Forwards,Midfielders,Defenders,Goalkeepers,A
+1,Football championship India?,భారత్ ఫుట్బాల్ టోర్నమెంట్?,AFA,DCM,Subroto,Santosh,D
+1,Basketball court size?,బాస్కెట్బాల్ కోర్ట్ పరిమాణం?,26x14,28x15,26x15,30x15,B
+1,Marshal duty?,మార్షల్ పని?,Discipline,Track,Officials,Entry control,D
+1,Volleying?,వాలీయింగ్ అంటే?,Kick air,Ground kick,Pass,Throw,A
+1,Cricket field shape?,క్రికెట్ మైదానం ఆకారం?,Pentagon,Rectangle,Oval,Square,C
+1,Match equipment?,పరికరాలు సరిపోల్చండి?,Set1,Set2,Set3,Set4,A
+1,Quick winner method?,త్వరగా విజేత?,Knockout,League,Combo,Challenge,A
+1,Low cost tournament?,తక్కువ ఖర్చు టోర్నమెంట్?,Combo,League,Knockout,Challenge,C
+1,Knockout disadvantage?,నాక్ఔట్ లోపం?,Early exit,Time,Cost,None,A
+1,Matches (8 teams league)?,8 జట్లు మ్యాచ్లు?,20,28,36,40,B
+1,Matches (double league)?,డబుల్ లీగ్?,40,48,56,60,C
+1,Expensive tournament?,ఖరీదైన టోర్నమెంట్?,Combo,League,Knockout,Challenge,B
+1,Best chance to all?,అందరికీ అవకాశం?,League,Knockout,Combo,Challenge,A
+1,Individual tournament?,వ్యక్తిగత టోర్నమెంట్?,League,Knockout,Challenge,Combo,C
+1,Not test quality?,పరీక్ష నాణ్యతకు సంబంధం లేనిది?,Creativity,Validity,Reliability,Objectivity,A
