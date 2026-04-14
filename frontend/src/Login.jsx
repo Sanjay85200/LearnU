@@ -13,6 +13,8 @@ function Login() {
   // Auth state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [couponKey, setCouponKey] = useState('');
   const [role, setRole] = useState('student');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -58,17 +60,21 @@ function Login() {
         
         if (error) throw error;
         
-        // Sync public.users
+        // Sync public tables based on strict segregation
         if (data?.user) {
-            const { error: dbError } = await supabase.from('users').upsert([{
+            const tablePath = role === 'student' ? 'students' : 'teachers';
+            const payload = {
                id: data.user.id,
                name: email.split('@')[0], 
                email: email,
-               role: role
-            }]);
+               mobile: mobile || null
+            };
+            if (role === 'student') payload.coupon_key = couponKey || null;
+
+            const { error: dbError } = await supabase.from(tablePath).upsert([payload]);
             
             if (dbError) {
-               console.warn("Public.user sync failed:", dbError.message);
+               console.warn(`Public ${tablePath} sync failed:`, dbError.message);
             }
         }
         
@@ -169,6 +175,21 @@ function Login() {
 
           {!isLogin && (
             <div style={{position: 'relative'}}>
+              <input 
+                type="tel" 
+                placeholder="Mobile Number" 
+                required 
+                value={mobile}
+                onChange={(e) => setMobile(e.target.value)}
+                style={{width: '100%', padding: '1rem 1rem 1rem 1rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '14px', outline: 'none', color: '#1e293b', fontSize: '0.95rem', transition: 'border 0.2s'}}
+                onFocus={(e) => e.target.style.borderColor = '#3b82f6'}
+                onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
+              />
+            </div>
+          )}
+
+          {!isLogin && (
+            <div style={{position: 'relative'}}>
               <select 
                 value={role} 
                 onChange={(e) => setRole(e.target.value)} 
@@ -178,6 +199,20 @@ function Login() {
                 <option value="student">{t('student')}</option>
                 <option value="teacher">{t('teacher')}</option>
               </select>
+            </div>
+          )}
+
+          {!isLogin && role === 'student' && (
+            <div style={{position: 'relative'}}>
+              <input 
+                type="text" 
+                placeholder="Coupon Key (Optional)" 
+                value={couponKey}
+                onChange={(e) => setCouponKey(e.target.value)}
+                style={{width: '100%', padding: '1rem', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '14px', outline: 'none', color: '#166534', fontSize: '0.95rem', transition: 'border 0.2s'}}
+                onFocus={(e) => e.target.style.borderColor = '#22c55e'}
+                onBlur={(e) => e.target.style.borderColor = '#bbf7d0'}
+              />
             </div>
           )}
 

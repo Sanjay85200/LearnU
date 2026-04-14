@@ -19,7 +19,7 @@ function Leaderboard() {
                 // Fetch results joined with user details, ordered by highest score
                 const { data, error } = await supabase
                     .from('results')
-                    .select('*, users(name, email)')
+                    .select('*, students(name, email)')
                     .eq('test_id', 1)
                     .order('score', { ascending: false })
                     .limit(50);
@@ -86,10 +86,10 @@ function Leaderboard() {
                                         
                                         <div style={{flex: 1, display: 'flex', flexDirection: 'column'}}>
                                             <span style={{fontSize: '1.1rem', fontWeight: 'bold'}}>
-                                                {result.users ? result.users.name : 'Anonymous Student'}
+                                                {result.students ? result.students.name : 'Anonymous Student'}
                                             </span>
                                             <span style={{fontSize: '0.85rem', color: 'var(--text-muted)'}}>
-                                                {result.users ? result.users.email : 'No email linked'}
+                                                {result.students ? result.students.email : 'No email linked'}
                                             </span>
                                         </div>
 
