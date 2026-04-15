@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PlusCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { PlusCircle, Share2, BarChart3 } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import { supabase } from './supabaseClient';
 import './TeacherPortal.css'; 
@@ -26,9 +27,8 @@ function TeacherPortal() {
             // First ensure we have a demo test ID=1
             await supabase.from('tests').insert({
                 id: 1, test_name: 'Physical Education Demo Test'
-            }).select(); // Fails silently if ID 1 already exists due to conflict, which is fine for demo
+            }).select();
 
-            // Insert question into Supabase
             const { error } = await supabase.from('questions').insert([{
                 test_id: 1,
                 question: question,
@@ -42,13 +42,40 @@ function TeacherPortal() {
 
             if (error) throw error;
             alert("Question successfully saved to Supabase!");
-            
-            // Clear standard fields
             setQuestion(''); setOption1(''); setOption2(''); setOption3(''); setOption4(''); setCorrectAnswer('');
         } catch (err) {
             alert("Error saving question: " + err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleShareTest = (platform) => {
+        const testUrl = `${window.location.origin}/student-test`;
+        const message = `🎓 Take the LearnU Test! Test your knowledge and compete with others. Click here: ${testUrl}`;
+        
+        let shareUrl = '';
+        switch(platform) {
+            case 'whatsapp':
+                shareUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+                break;
+            case 'instagram':
+                navigator.clipboard.writeText(message);
+                alert('Test link copied! You can now paste it in Instagram.');
+                return;
+            case 'sms':
+                shareUrl = `sms:?body=${encodeURIComponent(message)}`;
+                break;
+            case 'copy':
+                navigator.clipboard.writeText(testUrl);
+                alert('Test link copied to clipboard!');
+                return;
+            default:
+                return;
+        }
+        
+        if (shareUrl) {
+            window.open(shareUrl, '_blank');
         }
     };
 
@@ -61,7 +88,14 @@ function TeacherPortal() {
                 </div>
                 <div className="header-actions">
                     <LanguageSelector />
-                    <button className="btn-secondary" onClick={() => navigate('/leaderboard')}>Results Dashboard</button>
+                    <button className="btn-secondary" onClick={() => navigate('/leaderboard')}>
+                        <BarChart3 size={16} style={{ marginRight: '4px' }} />
+                        Results Dashboard
+                    </button>
+                    <button className="btn-secondary" onClick={() => handleShareTest('whatsapp')}>
+                        <Share2 size={16} style={{ marginRight: '4px' }} />
+                        Share Test
+                    </button>
                     <button className="btn-primary">{t('createNewTest')}</button>
                     <div className="profile-circle">T</div>
                 </div>
