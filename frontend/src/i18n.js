@@ -26,7 +26,9 @@ const resources = {
       "student": "Student",
       "signIn": "Sign In",
       "createAccount": "Create Account",
-      "welcomeBack": "Welcome Back to LearnU"
+      "welcomeBack": "Welcome Back to LearnU",
+      "testSeries": "Test Series",
+      "leaderboard": "Leaderboard"
     }
   },
   te: {
@@ -53,7 +55,9 @@ const resources = {
       "student": "విద్యార్థి",
       "signIn": "సైన్ ఇన్ చేయండి",
       "createAccount": "ఖాతాను సృష్టించండి",
-      "welcomeBack": "LearnU కు తిరిగి స్వాగతం"
+      "welcomeBack": "LearnU కు తిరిగి స్వాగతం",
+      "testSeries": "టెస్ట్ సిరీస్",
+      "leaderboard": "లీడర్‌బోర్డ్"
     }
   }
 };

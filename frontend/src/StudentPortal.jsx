@@ -1,276 +1,272 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { Clock, ChevronLeft, CheckCircle2, MinusCircle, Circle } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Clock, ChevronLeft, ChevronRight, CheckCircle2, XCircle, Circle, Save } from 'lucide-react';
 import { supabase } from './supabaseClient';
-import './TeacherPortal.css'; 
 
 function StudentPortal() {
-    const { t, i18n } = useTranslation();
-    const navigate = useNavigate();
-    
-    const [questions, setQuestions] = useState([]);
-    const [currentIdx, setCurrentIdx] = useState(0);
-    const [answers, setAnswers] = useState({});
-    
-    const [loading, setLoading] = useState(true);
-    const [testFinished, setTestFinished] = useState(false);
-    const [score, setScore] = useState(0);
-    const [wrongCount, setWrongCount] = useState(0);
-    const [unansweredCount, setUnansweredCount] = useState(0);
-    
-    // Timer state: 30 minutes for demo
-    const [timeLeft, setTimeLeft] = useState(30 * 60);
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const testId = queryParams.get('testId') || 1;
 
-    useEffect(() => {
-        const fetchQuestions = async () => {
-            setLoading(true);
-            try {
-                const { data, error } = await supabase
-                    .from('questions')
-                    .select('*')
-                    .eq('test_id', 1)
-                    .limit(20); // 20 questions for demo
-                
-                if (error) throw error;
-                if (data) setQuestions(data);
-            } catch (err) {
-                console.error("Error fetching questions", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchQuestions();
-    }, []);
+  const [questions, setQuestions] = useState([]);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [testFinished, setTestFinished] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(60 * 60); // 1 hour default
+  const [userRank, setUserRank] = useState(null);
 
-    useEffect(() => {
-        if (loading || testFinished) return;
-        if (timeLeft <= 0) { submitTest(); return; }
-        const timerId = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
-        return () => clearInterval(timerId);
-    }, [timeLeft, loading, testFinished]);
-
-    const handleOptionSelect = (qId, optionLetter) => {
-        setAnswers({ ...answers, [qId]: optionLetter });
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('questions')
+          .select('*')
+          .eq('test_id', testId);
+        if (error) throw error;
+        setQuestions(data || []);
+      } catch (err) {
+        console.error("Error fetching questions", err);
+      } finally {
+        setLoading(false);
+      }
     };
+    fetchQuestions();
+  }, [testId]);
 
-    const submitTest = async () => {
-        setTestFinished(true);
-        let calculatedScore = 0;
-        let incorrect = 0;
-        let unanswered = 0;
+  useEffect(() => {
+    if (loading || testFinished || questions.length === 0) return;
+    if (timeLeft <= 0) { submitTest(); return; }
+    const timerId = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    return () => clearInterval(timerId);
+  }, [timeLeft, loading, testFinished, questions]);
 
-        questions.forEach(q => {
-            if (!answers[q.id]) {
-                unanswered += 1;
-            } else if (answers[q.id].toUpperCase() === q.correct_answer.toUpperCase()) {
-                calculatedScore += 1;
-            } else {
-                incorrect += 1;
-            }
-        });
-        setScore(calculatedScore);
-        setWrongCount(incorrect);
-        setUnansweredCount(unanswered);
+  const handleOptionSelect = (qId, optionLetter) => {
+    setAnswers({ ...answers, [qId]: optionLetter });
+  };
 
-        try {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                await supabase.from('results').insert([{
-                    user_id: user.id,
-                    test_id: 1,
-                    score: calculatedScore
-                }]);
-            }
-        } catch (e) {
-            console.error("Could not save score to DB", e);
-        }
-    };
+  const submitTest = async () => {
+    setTestFinished(true);
+    let calculatedScore = 0;
+    questions.forEach(q => {
+      if (answers[q.id]?.toUpperCase() === q.correct_answer.toUpperCase()) {
+        calculatedScore += 1;
+      }
+    });
 
-    const changeLanguage = (lng) => i18n.changeLanguage(lng);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from('results').insert([{
+          user_id: user.id,
+          test_id: testId,
+          score: calculatedScore
+        }]);
 
-    const formatTime = (seconds) => {
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
-    };
-
-    // Render Language Toggle (Universal)
-    const renderLangToggle = () => (
-         <div className="language-toggle" style={{background: '#e2e8f0', padding: '4px', borderRadius: '20px', display: 'flex'}}>
-            <button 
-                onClick={() => changeLanguage('en')}
-                style={{padding: '4px 12px', borderRadius: '16px', background: i18n.language === 'en' ? '#3b82f6' : 'transparent', color: i18n.language === 'en' ? 'white' : '#64748b', fontWeight: 'bold', fontSize: '0.75rem', border: 'none', cursor: 'pointer', transition: 'all 0.2s', boxShadow: i18n.language === 'en' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'}}
-            >
-                EN
-            </button>
-            <button 
-                onClick={() => changeLanguage('te')}
-                style={{padding: '4px 12px', borderRadius: '16px', background: i18n.language === 'te' ? '#3b82f6' : 'transparent', color: i18n.language === 'te' ? 'white' : '#64748b', fontWeight: 'bold', fontSize: '0.75rem', border: 'none', cursor: 'pointer', transition: 'all 0.2s', boxShadow: i18n.language === 'te' ? '0 2px 4px rgba(0,0,0,0.1)' : 'none'}}
-            >
-                TE
-            </button>
-         </div>
-    );
-
-    if (loading) {
-        return <div className="portal-container" style={{display: 'flex', justifyContent: 'center', marginTop: '20vh', backgroundColor: '#f0f4f8', minHeight: '100vh'}}><h2>Loading Quiz...</h2></div>;
-    }
-
-    if (testFinished) {
-        const percentage = Math.round((score / questions.length) * 100) || 0;
+        // Fetch rank
+        const { count, error: rankError } = await supabase
+          .from('results')
+          .select('*', { count: 'exact', head: true })
+          .eq('test_id', testId)
+          .gt('score', calculatedScore);
         
-        return (
-            <div className="portal-container" style={{maxWidth: '400px', margin: '0 auto', minHeight: '100vh', backgroundColor: '#f0f4f8', padding: '1.5rem'}}>
-                <header style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem'}}>
-                    <h2 style={{fontSize: '1.2rem', color: '#1e293b', margin: 0, fontWeight: '700'}}>Results</h2>
-                    {renderLangToggle()}
-                </header>
-
-                <div style={{background: 'white', borderRadius: '24px', padding: '2.5rem 1.5rem', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-                    
-                    {/* CSS Circular Progress Ring */}
-                    <div style={{
-                        width: '120px', height: '120px', borderRadius: '50%', 
-                        background: `conic-gradient(#10b981 ${percentage}%, #e2e8f0 ${percentage}%)`,
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '2rem',
-                        boxShadow: '0 4px 10px rgba(16, 185, 129, 0.2)'
-                    }}>
-                        <div style={{width: '96px', height: '96px', background: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                             <h2 style={{fontSize: '2rem', margin: 0, color: '#1e293b'}}>{score}<span style={{fontSize: '1.2rem', color: '#94a3b8'}}>/{questions.length}</span></h2>
-                        </div>
-                    </div>
-
-                    <h2 style={{fontSize: '1.5rem', color: '#1e293b', marginBottom: '2rem'}}>Congratulations!</h2>
-
-                    <div style={{width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-                        <div style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem 1rem', background: '#f8fafc', borderRadius: '12px'}}>
-                            <div style={{display: 'flex', gap: '1rem', alignItems: 'center', color: '#475569'}}><CheckCircle2 color="#10b981" /> <span>Correct</span></div>
-                            <span style={{fontWeight: '700'}}>{score}</span>
-                        </div>
-                        <div style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem 1rem', background: '#f8fafc', borderRadius: '12px'}}>
-                            <div style={{display: 'flex', gap: '1rem', alignItems: 'center', color: '#475569'}}><MinusCircle color="#ef4444" /> <span>Wrong</span></div>
-                            <span style={{fontWeight: '700'}}>{wrongCount}</span>
-                        </div>
-                        <div style={{display: 'flex', justifyContent: 'space-between', padding: '0.5rem 1rem', background: '#f8fafc', borderRadius: '12px'}}>
-                            <div style={{display: 'flex', gap: '1rem', alignItems: 'center', color: '#475569'}}><Circle color="#94a3b8" /> <span>Unanswered</span></div>
-                            <span style={{fontWeight: '700'}}>{unansweredCount}</span>
-                        </div>
-                    </div>
-
-                    <div style={{width: '100%', marginTop: '3rem', display: 'flex', flexDirection: 'column', gap: '1rem'}}>
-                        <button className="btn-primary" onClick={() => navigate('/leaderboard')}>View Global Leaderboard</button>
-                        <button className="btn-secondary" style={{background: 'transparent', border: '1px solid #e2e8f0', color: '#64748b'}} onClick={() => navigate('/login')}>Go to Home</button>
-                    </div>
-                </div>
-            </div>
-        );
+        if (!rankError) {
+          setUserRank((count || 0) + 1);
+        } else {
+          console.warn("Rank calculation failed:", rankError.message);
+          setUserRank("Available on Leaderboard");
+        }
+      }
+    } catch (e) {
+      console.error("Could not save score to DB", e);
+      setUserRank("Available on Leaderboard");
     }
+  };
 
-    if (questions.length === 0) {
-        return <div className="portal-container" style={{textAlign: 'center', marginTop: '20vh'}}><h2>No Questions Found</h2><p>Tell your teacher to upload physical education questions!</p></div>;
-    }
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
 
-    const currentQuestion = questions[currentIdx];
+  if (loading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><h2>Loading Test...</h2></div>;
 
-    // Splitting question_en and question_te safely 
-    const qParts = currentQuestion.question.split('\n');
-    const qEn = qParts[0];
-    const qTe = qParts[1] ? qParts[1].replace(/[()]/g, '') : ''; // Remove literal parenthesis from db mapping
+  if (testFinished) {
+    const score = questions.reduce((acc, q) => answers[q.id]?.toUpperCase() === q.correct_answer.toUpperCase() ? acc + 1 : acc, 0);
+    const incorrect = Object.keys(answers).length - score;
+    const skipped = questions.length - Object.keys(answers).length;
 
     return (
-        <div className="portal-container" style={{maxWidth: '400px', margin: '0 auto', minHeight: '100vh', backgroundColor: '#f0f4f8', padding: '1.5rem'}}>
-            <header style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem'}}>
-                <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#1e293b', fontWeight: '800', fontSize: '1.2rem', cursor: 'pointer'}} onClick={() => navigate(-1)}>
-                    <ChevronLeft size={24} /> Quiz
-                </div>
-                {renderLangToggle()}
-            </header>
+      <div className="container" style={{ padding: '3rem 0' }}>
+        <div className="card" style={{ maxWidth: '600px', margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ color: 'var(--primary-blue)', marginBottom: '1.5rem' }}>LearnU Exam Result</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
+            <div style={{ padding: '1rem', background: '#f0fdf4', borderRadius: '10px' }}>
+              <CheckCircle2 color="var(--success)" />
+              <h3 style={{ fontSize: '1.5rem' }}>{score}</h3>
+              <p style={{ fontSize: '0.8rem' }}>Correct</p>
+            </div>
+            <div style={{ padding: '1rem', background: '#fef2f2', borderRadius: '10px' }}>
+              <XCircle color="var(--danger)" />
+              <h3 style={{ fontSize: '1.5rem' }}>{incorrect}</h3>
+              <p style={{ fontSize: '0.8rem' }}>Incorrect</p>
+            </div>
+            <div style={{ padding: '1rem', background: '#f1f5f9', borderRadius: '10px' }}>
+              <Circle color="var(--text-light)" />
+              <h3 style={{ fontSize: '1.5rem' }}>{skipped}</h3>
+              <p style={{ fontSize: '0.8rem' }}>Skipped</p>
+            </div>
+          </div>
+          <div style={{ marginBottom: '2rem' }}>
+            <p style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Your Score: <strong>{score} / {questions.length}</strong></p>
+            <p style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Percentage: <strong>{Math.round((score / questions.length) * 100)}%</strong></p>
+            {userRank && (
+              <p style={{ fontSize: '1.5rem', color: 'var(--primary-blue)', fontWeight: '800' }}>
+                Your Rank: #{userRank}
+              </p>
+            )}
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <button className="btn-primary" onClick={() => navigate('/leaderboard')}>View Leaderboard</button>
+            <button className="btn-secondary" onClick={() => navigate('/student-landing')}>Back to Home</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-            {/* Pagination dots (simplified) */}
-            <div style={{display: 'flex', gap: '6px', justifyContent: 'flex-start', marginLeft: '2rem', marginBottom: '1.5rem'}}>
-                {questions.slice(0, 5).map((q, i) => (
-                    <div key={i} style={{width: '8px', height: '8px', borderRadius: '50%', background: i === currentIdx ? '#3b82f6' : '#cbd5e1'}}></div>
-                 ))}
-                 {questions.length > 5 && <div style={{width: '8px', height: '8px', borderRadius: '50%', background: '#cbd5e1'}}></div>}
+  if (questions.length === 0) return <div style={{ textAlign: 'center', padding: '5rem' }}><h2>No questions found for this test.</h2></div>;
+
+  const currentQuestion = questions[currentIdx];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 70px)' }}>
+      {/* Test Header */}
+      <div style={{ background: 'var(--white)', borderBottom: '1px solid var(--border-color)', padding: '0.75rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ color: 'var(--primary-blue)' }}>LearnU Online Exam</h3>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--secondary-blue)', padding: '0.4rem 1rem', borderRadius: '20px', fontWeight: '700', color: timeLeft < 300 ? 'var(--danger)' : 'var(--primary-blue)' }}>
+            <Clock size={18} /> {formatTime(timeLeft)}
+          </div>
+          <button className="btn-primary" style={{ background: 'var(--success)' }} onClick={submitTest}>Submit Test</button>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        {/* Main Question Area */}
+        <div style={{ flex: 1, padding: '2rem', overflowY: 'auto' }}>
+          <div className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.5rem' }}>
+              <span style={{ fontWeight: '700' }}>Question {currentIdx + 1}</span>
+              <span style={{ color: 'var(--text-light)', fontSize: '0.94rem' }}>Marks: +1.0</span>
+            </div>
+            <p style={{ fontSize: '1.1rem', fontWeight: '500', marginBottom: '2rem' }}>{currentQuestion.question}</p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {['A', 'B', 'C', 'D'].map((letter, idx) => {
+                const isSelected = answers[currentQuestion.id] === letter;
+                return (
+                  <div 
+                    key={letter}
+                    onClick={() => handleOptionSelect(currentQuestion.id, letter)}
+                    style={{
+                      padding: '1rem 1.5rem',
+                      border: `2px solid ${isSelected ? 'var(--primary-blue)' : 'var(--border-color)'}`,
+                      borderRadius: '10px',
+                      background: isSelected ? 'var(--secondary-blue)' : 'var(--white)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '1rem',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <div style={{
+                      width: '30px', height: '30px', borderRadius: '50%', border: '2px solid var(--primary-blue)', 
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700',
+                      background: isSelected ? 'var(--primary-blue)' : 'transparent',
+                      color: isSelected ? 'white' : 'var(--primary-blue)'
+                    }}>
+                      {letter}
+                    </div>
+                    <span>
+                      {currentQuestion[`option${idx + 1}`] && currentQuestion[`option${idx + 1}`].includes(' / ') && currentQuestion[`option${idx + 1}`].split(' / ')[0].trim() === currentQuestion[`option${idx + 1}`].split(' / ')[1].trim()
+                        ? currentQuestion[`option${idx + 1}`].split(' / ')[0].trim()
+                        : currentQuestion[`option${idx + 1}`]}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
 
-            <main style={{background: 'white', borderRadius: '24px', padding: '2rem 1.5rem', boxShadow: '0 10px 25px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column'}}>
-                
-                <h2 style={{fontSize: '1.25rem', color: '#1e293b', marginBottom: '0.5rem', lineHeight: '1.5', fontWeight: '700'}}>
-                    {qEn}
-                </h2>
-                {qTe && <p style={{color: '#64748b', marginBottom: '2rem', fontSize: '1rem', lineHeight: '1.5'}}>{qTe}</p>}
-                
-                <div style={{display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1}}>
-                    {['A', 'B', 'C', 'D'].map((optLetter, idx) => {
-                        const optionText = currentQuestion[`option${idx + 1}`];
-                        const isSelected = answers[currentQuestion.id] === optLetter;
-                        
-                        return (
-                            <div 
-                                key={optLetter}
-                                onClick={() => handleOptionSelect(currentQuestion.id, optLetter)}
-                                style={{
-                                    padding: '1rem 1.25rem',
-                                    borderRadius: '16px',
-                                    background: isSelected ? '#3b82f6' : 'transparent',
-                                    border: `1px solid ${isSelected ? '#3b82f6' : '#e2e8f0'}`,
-                                    color: isSelected ? 'white' : '#475569',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.2s',
-                                    display: 'flex',
-                                    gap: '1rem',
-                                    alignItems: 'center',
-                                    boxShadow: isSelected ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none'
-                                }}
-                            >
-                                <div style={{
-                                    width: '26px', height: '26px', 
-                                    borderRadius: '50%', 
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    background: isSelected ? 'rgba(255,255,255,0.2)' : '#f1f5f9',
-                                    color: isSelected ? 'white' : '#94a3b8',
-                                    fontSize: '0.85rem',
-                                    fontWeight: '800'
-                                }}>
-                                    {optLetter}
-                                </div>
-                                <span style={{fontSize: '1rem', fontWeight: '500'}}>{optionText}</span>
-                            </div>
-                        );
-                    })}
-                </div>
-                
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '2.5rem', borderTop: '1px solid #e2e8f0', paddingTop: '1.5rem'}}>
-                    <div style={{display: 'flex', flexDirection: 'column'}}>
-                        <span style={{fontSize: '0.8rem', color: '#64748b', fontWeight: '600'}}>Question {currentIdx + 1}/{questions.length}</span>
-                        <div style={{display: 'flex', alignItems: 'center', gap: '0.3rem', color: timeLeft < 300 ? '#ef4444' : '#1e293b', fontWeight: '700'}}>
-                            <Clock size={16} /> {formatTime(timeLeft)}
-                        </div>
-                    </div>
-                    
-                    {currentIdx < questions.length - 1 ? (
-                        <button 
-                            className="btn-primary" 
-                            style={{width: '120px', margin: 0}}
-                            onClick={() => setCurrentIdx(prev => prev + 1)}
-                        >
-                            Next
-                        </button>
-                    ) : (
-                        <button 
-                            className="btn-save" 
-                            style={{width: '120px', margin: 0, background: '#10b981'}}
-                            onClick={submitTest}
-                        >
-                            Submit
-                        </button>
-                    )}
-                </div>
-            </main>
+            <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'space-between' }}>
+              <button 
+                className="btn-secondary" 
+                disabled={currentIdx === 0} 
+                onClick={() => setCurrentIdx(prev => prev - 1)}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
+                <ChevronLeft size={18} /> Previous
+              </button>
+              <button 
+                className="btn-primary" 
+                onClick={() => currentIdx < questions.length - 1 ? setCurrentIdx(prev => prev + 1) : submitTest()}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
+                {currentIdx < questions.length - 1 ? 'Next' : 'Submit'} <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
         </div>
-    );
+
+        {/* Question Palette Sidebar */}
+        <div style={{ width: '300px', background: 'var(--white)', borderLeft: '1px solid var(--border-color)', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <h4>Question Palette</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '0.5rem' }}>
+            {questions.map((q, idx) => {
+              const isAnswered = !!answers[q.id];
+              const isCurrent = currentIdx === idx;
+              return (
+                <div 
+                  key={q.id}
+                  onClick={() => setCurrentIdx(idx)}
+                  style={{
+                    width: '40px', height: '40px', borderRadius: '5px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    cursor: 'pointer', fontWeight: '600',
+                    background: isCurrent ? 'var(--primary-blue)' : isAnswered ? 'var(--success)' : 'var(--bg-light)',
+                    color: isCurrent || isAnswered ? 'white' : 'var(--text-dark)',
+                    border: isCurrent ? 'none' : `1px solid var(--border-color)`
+                  }}
+                >
+                  {idx + 1}
+                </div>
+              );
+            })}
+          </div>
+          
+          <div style={{ marginTop: 'auto', fontSize: '0.85rem' }}>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem' }}>
+                <div style={{ width: '15px', height: '15px', background: 'var(--success)', borderRadius: '3px' }}></div>
+                Answered
+             </div>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem' }}>
+                <div style={{ width: '15px', height: '15px', background: 'var(--bg-light)', border: '1px solid var(--border-color)', borderRadius: '3px' }}></div>
+                Not Answered
+             </div>
+             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ width: '15px', height: '15px', background: 'var(--primary-blue)', borderRadius: '3px' }}></div>
+                Current
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default StudentPortal;

@@ -1,188 +1,305 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { PlusCircle, Share2, BarChart3 } from 'lucide-react';
-import LanguageSelector from './LanguageSelector';
+import { PlusCircle, FileText, List, Save, Trash2, CheckCircle, Share2, MessageCircle, Send, MessageSquare, Copy, LogOut } from 'lucide-react';
 import { supabase } from './supabaseClient';
-import './TeacherPortal.css'; 
 
 function TeacherPortal() {
-    const { t } = useTranslation();
-    const navigate = useNavigate();
-    const [questionType, setQuestionType] = useState('standard'); 
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState('tests'); // 'tests' or 'questions'
+  const [tests, setTests] = useState([]);
+  const [selectedTestId, setSelectedTestId] = useState('');
+  
+  // New Test form
+  const [newTestName, setNewTestName] = useState('');
+  
+  // New Question form
+  const [question, setQuestion] = useState('');
+  const [option1, setOption1] = useState('');
+  const [option2, setOption2] = useState('');
+  const [option3, setOption3] = useState('');
+  const [option4, setOption4] = useState('');
+  const [correctAnswer, setCorrectAnswer] = useState('');
+  
+  const [loading, setLoading] = useState(false);
+  const [showShareMenu, setShowShareMenu] = useState(null); // ID of the test being shared
+
+  useEffect(() => {
+    fetchTests();
+  }, []);
+
+  const fetchTests = async () => {
+    const { data, error } = await supabase.from('tests').select('*').order('id', { ascending: false });
+    if (error) console.error(error);
+    else setTests(data || []);
+  };
+
+  const handleCreateTest = async (e) => {
+    e.preventDefault();
+    if (!newTestName) return;
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data, error } = await supabase.from('tests').insert([
+        { test_name: newTestName, created_by: user?.id }
+      ]).select();
+      if (error) throw error;
+      setNewTestName('');
+      fetchTests();
+      alert("Test paper created successfully!");
+    } catch (err) {
+      alert("Error: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveQuestion = async (e) => {
+    e.preventDefault();
+    if (!selectedTestId || !question || !correctAnswer) {
+        alert("Please fill all required fields and select a test.");
+        return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.from('questions').insert([{
+        test_id: selectedTestId,
+        question: question,
+        option1: option1,
+        option2: option2,
+        option3: option3,
+        option4: option4,
+        correct_answer: correctAnswer
+      }]);
+
+      if (error) throw error;
+      alert("Question added successfully!");
+      setQuestion(''); setOption1(''); setOption2(''); setOption3(''); setOption4(''); setCorrectAnswer('');
+    } catch (err) {
+      alert("Error saving question: " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTest = async (id) => {
+    if (!window.confirm("Are you sure? This will delete all questions in this test.")) return;
+    const { error } = await supabase.from('tests').delete().eq('id', id);
+    if (error) alert(error.message);
+    else fetchTests();
+  };
+
+  const handleShare = (test, platform) => {
+    const testUrl = `${window.location.origin}/student-test?testId=${test.id}`;
+    const message = `Hi! Please take this test on LearnU: ${test.test_name}. Click here: ${testUrl}`;
     
-    // Form fields mapped to user's schema
-    const [question, setQuestion] = useState('');
-    const [option1, setOption1] = useState('');
-    const [option2, setOption2] = useState('');
-    const [option3, setOption3] = useState('');
-    const [option4, setOption4] = useState('');
-    const [correctAnswer, setCorrectAnswer] = useState('');
+    let url = '';
+    switch(platform) {
+        case 'whatsapp':
+            url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            break;
+        case 'telegram':
+            url = `https://t.me/share/url?url=${encodeURIComponent(testUrl)}&text=${encodeURIComponent(message)}`;
+            break;
+        case 'sms':
+            url = `sms:?body=${encodeURIComponent(message)}`;
+            break;
+        case 'copy':
+            navigator.clipboard.writeText(testUrl);
+            alert("Link copied to clipboard!");
+            setShowShareMenu(null);
+            return;
+        default:
+            return;
+    }
     
-    const [loading, setLoading] = useState(false);
+    if (url) {
+        window.open(url, '_blank');
+        setShowShareMenu(null);
+    }
+  };
 
-    const handleSave = async () => {
-        setLoading(true);
-        try {
-            // First ensure we have a demo test ID=1
-            await supabase.from('tests').insert({
-                id: 1, test_name: 'Physical Education Demo Test'
-            }).select();
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/login';
+  };
 
-            const { error } = await supabase.from('questions').insert([{
-                test_id: 1,
-                question: question,
-                question_type: questionType,
-                option1: option1,
-                option2: option2,
-                option3: option3,
-                option4: option4,
-                correct_answer: correctAnswer
-            }]);
-
-            if (error) throw error;
-            alert("Question successfully saved to Supabase!");
-            setQuestion(''); setOption1(''); setOption2(''); setOption3(''); setOption4(''); setCorrectAnswer('');
-        } catch (err) {
-            alert("Error saving question: " + err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleShareTest = (platform) => {
-        const testUrl = `${window.location.origin}/student-test`;
-        const message = `🎓 Take the LearnU Test! Test your knowledge and compete with others. Click here: ${testUrl}`;
-        
-        let shareUrl = '';
-        switch(platform) {
-            case 'whatsapp':
-                shareUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-                break;
-            case 'instagram':
-                navigator.clipboard.writeText(message);
-                alert('Test link copied! You can now paste it in Instagram.');
-                return;
-            case 'sms':
-                shareUrl = `sms:?body=${encodeURIComponent(message)}`;
-                break;
-            case 'copy':
-                navigator.clipboard.writeText(testUrl);
-                alert('Test link copied to clipboard!');
-                return;
-            default:
-                return;
-        }
-        
-        if (shareUrl) {
-            window.open(shareUrl, '_blank');
-        }
-    };
-
-    return (
-        <div className="portal-container">
-            <header className="portal-header">
-                <div className="logo-area">
-                    <h1>{t('appTitle')}</h1>
-                    <span className="badge">{t('teacherPortal')}</span>
-                </div>
-                <div className="header-actions">
-                    <LanguageSelector />
-                    <button className="btn-secondary" onClick={() => navigate('/leaderboard')}>
-                        <BarChart3 size={16} style={{ marginRight: '4px' }} />
-                        Results Dashboard
-                    </button>
-                    <button className="btn-secondary" onClick={() => handleShareTest('whatsapp')}>
-                        <Share2 size={16} style={{ marginRight: '4px' }} />
-                        Share Test
-                    </button>
-                    <button className="btn-primary">{t('createNewTest')}</button>
-                    <div className="profile-circle">T</div>
-                </div>
-            </header>
-
-            <main className="portal-main">
-                <section className="upload-section">
-                    <h2><PlusCircle size={20} /> {t('addNewQuestion')}</h2>
-                    
-                    <div className="glass-card form-card">
-                        <div className="form-group">
-                            <label>{t('questionType')}</label>
-                            <select 
-                                value={questionType} 
-                                onChange={(e) => setQuestionType(e.target.value)}
-                                className="styled-select"
-                            >
-                                <option value="standard">{t('standardMCQ')}</option>
-                                <option value="matching">{t('matchList')}</option>
-                                <option value="multiple_codes">{t('multipleCodes')}</option>
-                            </select>
-                        </div>
-
-                        <div className="form-group w-full">
-                            <label>{t('questionContext')}</label>
-                            <textarea 
-                                value={question}
-                                onChange={(e) => setQuestion(e.target.value)}
-                                placeholder={t('contextPlaceholder')} 
-                                rows="3"
-                                className="styled-textarea"
-                            />
-                        </div>
-
-                        {/* List-I / List-II Visual Demo */}
-                        {questionType === 'matching' && (
-                            <div className="matching-lists">
-                                <div className="list-box">
-                                    <h3>List-I</h3>
-                                    <input type="text" placeholder="i) Gully" />
-                                    <input type="text" placeholder="ii) Pivot" />
-                                </div>
-                                <div className="list-box">
-                                    <h3>List-II</h3>
-                                    <input type="text" placeholder="1. Cricket" />
-                                    <input type="text" placeholder="2. Basket ball" />
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="codes-section">
-                            <label>{t('answerOptions')}</label>
-                            <div className="options-grid">
-                                <div className="code-option">
-                                    <span className="option-label">A)</span>
-                                    <input type="text" value={option1} onChange={(e) => setOption1(e.target.value)} placeholder="Option 1" />
-                                </div>
-                                <div className="code-option">
-                                    <span className="option-label">B)</span>
-                                    <input type="text" value={option2} onChange={(e) => setOption2(e.target.value)} placeholder="Option 2" />
-                                </div>
-                                <div className="code-option">
-                                    <span className="option-label">C)</span>
-                                    <input type="text" value={option3} onChange={(e) => setOption3(e.target.value)} placeholder="Option 3" />
-                                </div>
-                                <div className="code-option">
-                                    <span className="option-label">D)</span>
-                                    <input type="text" value={option4} onChange={(e) => setOption4(e.target.value)} placeholder="Option 4" />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="form-group" style={{marginTop: '1.5rem'}}>
-                            <label>Correct Answer Letter</label>
-                            <input type="text" maxLength="1" className="styled-select" placeholder="A, B, C, or D" value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value.toUpperCase())} />
-                        </div>
-
-                        <div className="form-actions">
-                            <button className="btn-save" onClick={handleSave} disabled={loading}>
-                                {loading ? "Saving to Supabase..." : t('saveQuestion')}
-                            </button>
-                        </div>
-                    </div>
-                </section>
-            </main>
+  return (
+    <div className="container" style={{ padding: '2rem 0' }}>
+      <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h1>Teacher Dashboard</h1>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <button 
+            className={`btn-secondary ${activeTab === 'tests' ? 'active-tab' : ''}`} 
+            onClick={() => setActiveTab('tests')}
+            style={{ border: activeTab === 'tests' ? '2px solid var(--primary-blue)' : 'none' }}
+          >
+            <FileText size={18} /> Manage Tests
+          </button>
+          <button 
+            className={`btn-secondary ${activeTab === 'questions' ? 'active-tab' : ''}`} 
+            onClick={() => setActiveTab('questions')}
+            style={{ border: activeTab === 'questions' ? '2px solid var(--primary-blue)' : 'none' }}
+          >
+            <PlusCircle size={18} /> Add Questions
+          </button>
+          <button 
+            onClick={handleLogout}
+            className="btn-secondary"
+            style={{ color: 'var(--danger)', border: '1px solid var(--danger)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          >
+            <LogOut size={18} /> Logout
+          </button>
         </div>
-    );
+      </header>
+
+      {activeTab === 'tests' ? (
+        <div className="grid" style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
+          <section className="card">
+            <h3>Create New Test Paper</h3>
+            <form onSubmit={handleCreateTest} style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem' }}>Test Name</label>
+                <input 
+                  type="text" 
+                  value={newTestName} 
+                  onChange={(e) => setNewTestName(e.target.value)} 
+                  placeholder="e.g. SSC CGL Mock 1" 
+                  style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                />
+              </div>
+              <button type="submit" className="btn-primary" disabled={loading}>
+                {loading ? 'Creating...' : 'Create Test'}
+              </button>
+            </form>
+          </section>
+
+          <section className="card">
+            <h3>Existing Test Papers</h3>
+            <div style={{ marginTop: '1.5rem' }}>
+              {tests.length === 0 ? <p>No tests created yet.</p> : (
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ textAlign: 'left', borderBottom: '2px solid var(--bg-light)' }}>
+                      <th style={{ padding: '1rem' }}>Name</th>
+                      <th style={{ padding: '1rem' }}>Created</th>
+                      <th style={{ padding: '1rem' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tests.map(test => (
+                      <tr key={test.id} style={{ borderBottom: '1px solid var(--bg-light)' }}>
+                        <td style={{ padding: '1rem' }}>{test.test_name}</td>
+                        <td style={{ padding: '1rem', fontSize: '0.85rem' }}>{test.created_at ? new Date(test.created_at).toLocaleDateString() : 'N/A'}</td>
+                        <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem', position: 'relative' }}>
+                           <button onClick={() => { setSelectedTestId(test.id); setActiveTab('questions'); }} className="btn-secondary" style={{ padding: '0.4rem 0.8rem' }}>Add Qs</button>
+                           
+                           <div style={{ position: 'relative' }}>
+                             <button onClick={() => setShowShareMenu(showShareMenu === test.id ? null : test.id)} className="btn-secondary" style={{ padding: '0.4rem 0.8rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                               <Share2 size={16} /> Share
+                             </button>
+                             
+                             {showShareMenu === test.id && (
+                               <div style={{ 
+                                 position: 'absolute', top: '100%', right: 0, zIndex: 100, background: 'white', 
+                                 boxShadow: 'var(--shadow-lg)', borderRadius: '10px', padding: '0.5rem', 
+                                 display: 'flex', flexDirection: 'column', gap: '0.2rem', minWidth: '150px',
+                                 border: '1px solid var(--border-color)', marginTop: '0.5rem'
+                               }}>
+                                 <button onClick={() => handleShare(test, 'whatsapp')} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.6rem', border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left', borderRadius: '5px' }}>
+                                   <MessageCircle size={16} color="#25D366" /> WhatsApp
+                                 </button>
+                                 <button onClick={() => handleShare(test, 'telegram')} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.6rem', border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left', borderRadius: '5px' }}>
+                                   <Send size={16} color="#0088cc" /> Telegram
+                                 </button>
+                                 <button onClick={() => handleShare(test, 'sms')} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.6rem', border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left', borderRadius: '5px' }}>
+                                   <MessageSquare size={16} color="#64748b" /> SMS
+                                 </button>
+                                 <button onClick={() => handleShare(test, 'copy')} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.6rem', border: 'none', background: 'none', cursor: 'pointer', textAlign: 'left', borderRadius: '5px', borderTop: '1px solid var(--bg-light)' }}>
+                                   <Copy size={16} color="var(--primary-blue)" /> Copy Link
+                                 </button>
+                               </div>
+                             )}
+                           </div>
+
+                           <button onClick={() => handleDeleteTest(test.id)} style={{ color: 'var(--danger)', background: 'none', border: 'none', cursor: 'pointer' }}><Trash2 size={18} /></button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </section>
+        </div>
+      ) : (
+        <section className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <h3>Add Questions to Test Paper</h3>
+          <form onSubmit={handleSaveQuestion} style={{ marginTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Select Test Paper</label>
+              <select 
+                value={selectedTestId} 
+                onChange={(e) => setSelectedTestId(e.target.value)}
+                style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+              >
+                <option value="">-- Choose a Test --</option>
+                {tests.map(test => <option key={test.id} value={test.id}>{test.test_name}</option>)}
+              </select>
+            </div>
+
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Question Text</label>
+              <textarea 
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                rows="3"
+                placeholder="Enter the question here..."
+                style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+              />
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div>
+                    <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.85rem' }}>Option A</label>
+                    <input type="text" value={option1} onChange={(e) => setOption1(e.target.value)} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px' }} />
+                </div>
+                <div>
+                    <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.85rem' }}>Option B</label>
+                    <input type="text" value={option2} onChange={(e) => setOption2(e.target.value)} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px' }} />
+                </div>
+                <div>
+                    <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.85rem' }}>Option C</label>
+                    <input type="text" value={option3} onChange={(e) => setOption3(e.target.value)} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px' }} />
+                </div>
+                <div>
+                    <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.85rem' }}>Option D</label>
+                    <input type="text" value={option4} onChange={(e) => setOption4(e.target.value)} style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px' }} />
+                </div>
+            </div>
+
+            <div style={{ maxWidth: '200px' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '600' }}>Correct Answer</label>
+              <select 
+                value={correctAnswer} 
+                onChange={(e) => setCorrectAnswer(e.target.value)}
+                style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+              >
+                <option value="">Select</option>
+                <option value="A">Option A</option>
+                <option value="B">Option B</option>
+                <option value="C">Option C</option>
+                <option value="D">Option D</option>
+              </select>
+            </div>
+
+            <button type="submit" className="btn-primary" disabled={loading} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <Save size={18} /> {loading ? 'Saving...' : 'Save Question'}
+            </button>
+          </form>
+        </section>
+      )}
+    </div>
+  );
 }
 
 export default TeacherPortal;
