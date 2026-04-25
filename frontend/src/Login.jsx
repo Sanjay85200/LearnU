@@ -21,6 +21,9 @@ function Login() {
   const [successMsg, setSuccessMsg] = useState('');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [teacherKey, setTeacherKey] = useState('');
+  const [useOtp, setUseOtp] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpToken, setOtpToken] = useState('');
 
   React.useEffect(() => {
     const checkSession = async () => {
@@ -71,6 +74,35 @@ function Login() {
           handleRedirect(data.user);
         }
         
+      } else if (useOtp) {
+        if (otpSent) {
+          // Verify OTP
+          const { data, error } = await supabase.auth.verifyOtp({
+            email: email || undefined,
+            phone: mobile || undefined,
+            token: otpToken,
+            type: mobile ? 'sms' : 'signup'
+          });
+
+          if (error) throw error;
+          if (data.user) handleRedirect(data.user);
+          return;
+        }
+
+        // Send OTP
+        const { error } = await supabase.auth.signInWithOtp({
+          email: email || undefined,
+          phone: mobile || undefined,
+          options: {
+            shouldCreateUser: !isLogin,
+            data: !isLogin ? { role, name } : {}
+          }
+        });
+
+        if (error) throw error;
+        setOtpSent(true);
+        setSuccessMsg("Verification code sent! Please check your email or phone.");
+
       } else {
         // Teacher key validation
         if (role === 'teacher' && teacherKey !== 'LearnU1317') {
@@ -80,6 +112,7 @@ function Login() {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          phone: mobile || undefined,
           options: {
             data: { role: role, name: name },
             emailRedirectTo: `${window.location.origin}/`
@@ -212,6 +245,13 @@ function Login() {
                 </div>
               )}
 
+              {!isLogin && !showForgotPassword && (
+                <div style={{ position: 'relative' }}>
+                  <Phone size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  <input type="tel" placeholder="Mobile Number (with country code)" value={mobile} onChange={(e) => setMobile(e.target.value)} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
+                </div>
+              )}
+
               {!isLogin && !showForgotPassword && role === 'teacher' && (
                 <div style={{ position: 'relative' }}>
                   <Gift size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
@@ -220,21 +260,34 @@ function Login() {
               )}
               <div style={{ position: 'relative' }}>
                 <Mail size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                <input type="email" placeholder="Email Address" required value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
+                <input type="email" placeholder="Email Address" required={!mobile} value={email} onChange={(e) => setEmail(e.target.value)} disabled={otpSent} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
               </div>
-              {!showForgotPassword && (
+              
+              {useOtp && otpSent && (
+                <div style={{ position: 'relative' }}>
+                  <CheckSquare size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  <input type="text" placeholder="Enter 6-digit Code" required value={otpToken} onChange={(e) => setOtpToken(e.target.value)} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#fff7ed', border: '2px solid #fdba74', borderRadius: '12px', outline: 'none' }} />
+                </div>
+              )}
+
+              {!showForgotPassword && !useOtp && (
                 <div style={{ position: 'relative' }}>
                   <Lock size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                   <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
                 </div>
               )}
               <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', marginTop: '0.5rem', height: '50px' }}>
-                {loading ? 'Processing...' : showForgotPassword ? 'Send Reset Link' : isLogin ? 'Sign In' : 'Create Account'}
+                {loading ? 'Processing...' : showForgotPassword ? 'Send Reset Link' : useOtp ? (otpSent ? 'Verify Code' : 'Send Code') : isLogin ? 'Sign In' : 'Create Account'}
               </button>
             </div>
           </form>
 
           <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+            {!showForgotPassword && (
+              <p style={{ fontSize: '0.875rem', color: 'var(--primary-blue)', cursor: 'pointer', fontWeight: '600', marginBottom: '1rem' }} onClick={() => setUseOtp(!useOtp)}>
+                {useOtp ? 'Use Password instead' : 'Sign in with OTP / Mobile'}
+              </p>
+            )}
             {isLogin && !showForgotPassword && (
               <p style={{ fontSize: '0.875rem', color: 'var(--primary-blue)', cursor: 'pointer', fontWeight: '600' }} onClick={() => setShowForgotPassword(true)}>Forgot Password?</p>
             )}

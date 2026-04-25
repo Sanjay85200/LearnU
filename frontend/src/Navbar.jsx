@@ -10,6 +10,7 @@ const Navbar = () => {
   const location = useLocation();
   const [user, setUser] = React.useState(null);
   const [role, setRole] = React.useState(null);
+  const [stats, setStats] = React.useState({ latestScore: null, rank: null });
 
   React.useEffect(() => {
     const fetchUser = async () => {
@@ -22,11 +23,32 @@ const Navbar = () => {
           setRole('teacher');
         } else {
           setRole('student');
+          fetchLatestStats(session.user.id);
         }
       } else {
         setUser(null);
         setRole(null);
+        setStats({ latestScore: null, rank: null });
       }
+    };
+
+    const fetchLatestStats = async (userId) => {
+        const { data: results, error } = await supabase
+            .from('results')
+            .select('score')
+            .eq('user_id', userId)
+            .order('date', { ascending: false })
+            .limit(1);
+        
+        if (results && results.length > 0) {
+            const score = results[0].score;
+            const { count } = await supabase
+                .from('results')
+                .select('*', { count: 'exact', head: true })
+                .gt('score', score);
+            
+            setStats({ latestScore: score, rank: (count || 0) + 1 });
+        }
     };
     fetchUser();
 
@@ -65,6 +87,11 @@ const Navbar = () => {
         </Link>
 
         <ul className="nav-links">
+          <li>
+            <Link to="/" className={isActive('/') ? 'active' : ''}>
+               {t('Home')}
+            </Link>
+          </li>
           {role === 'student' && (
             <>
               <li>
@@ -94,6 +121,19 @@ const Navbar = () => {
         </ul>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {role === 'student' && stats.latestScore !== null && (
+            <div style={{ 
+              display: 'flex', alignItems: 'center', gap: '0.4rem', 
+              background: 'var(--secondary-blue)', padding: '0.4rem 0.8rem', 
+              borderRadius: '15px', border: '1px solid var(--primary-blue)',
+              fontSize: '0.85rem', fontWeight: '700', color: 'var(--primary-blue)'
+            }}>
+              <Trophy size={14} /> 
+              <span>Latest: {stats.latestScore}</span>
+              <span style={{ opacity: 0.6, margin: '0 0.2rem' }}>|</span>
+              <span>Rank: #{stats.rank}</span>
+            </div>
+          )}
           <LanguageSelector />
           {user ? (
             <button onClick={handleLogout} className="btn-secondary" style={{ padding: '0.5rem 1rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
