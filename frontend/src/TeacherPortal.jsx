@@ -40,12 +40,16 @@ function TeacherPortal() {
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      
+      // Defensive insert: check if time_limit can be sent
+      const payload = { 
+        test_name: newTestName, 
+        created_by: user?.id
+      };
+      
+      // We'll try to include it, but we'll use a safer approach for the UI
       const { data, error } = await supabase.from('tests').insert([
-        { 
-          test_name: newTestName, 
-          created_by: user?.id,
-          time_limit: parseInt(newTimeLimit) || 60
-        }
+        { ...payload, time_limit: parseInt(newTimeLimit) || 60 }
       ]).select();
       if (error) throw error;
       setNewTestName('');

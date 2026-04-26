@@ -23,9 +23,12 @@ function StudentPortal() {
     const fetchQuestions = async () => {
       setLoading(true);
       try {
-        const { data: testData } = await supabase.from('tests').select('time_limit').eq('id', testId).single();
+        // Fetch all test columns safely to avoid "column not found" error
+        const { data: testData } = await supabase.from('tests').select('*').eq('id', testId).single();
         if (testData?.time_limit) {
           setTimeLeft(testData.time_limit * 60);
+        } else {
+          setTimeLeft(60 * 60); // Default to 60 mins if column missing
         }
 
         const { data, error } = await supabase
