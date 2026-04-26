@@ -81,10 +81,24 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <div className="container nav-content">
-        <Link to="/" className="logo">
-          <BookOpen color="var(--primary-blue)" size={28} />
-          <span>LearnU</span>
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <Link to="/" className="logo">
+            <BookOpen color="var(--primary-blue)" size={28} />
+            <span>LearnU</span>
+          </Link>
+          
+          {user && (
+            <div style={{ 
+              fontSize: '0.9rem', color: 'var(--text-dark)', fontWeight: '500', 
+              display: 'flex', alignItems: 'center', gap: '0.4rem',
+              borderLeft: '2px solid var(--bg-light)', paddingLeft: '1.5rem',
+              height: '30px'
+            }}>
+              <User size={16} color="var(--primary-blue)" />
+              <span>Hi, {user.user_metadata?.name || user.email?.split('@')[0]}</span>
+            </div>
+          )}
+        </div>
 
         <ul className="nav-links">
           <li>

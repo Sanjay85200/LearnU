@@ -241,14 +241,23 @@ function Login() {
               {!isLogin && !showForgotPassword && (
                 <div style={{ position: 'relative' }}>
                   <User size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                  <input type="text" placeholder="Full Name" required value={name} onChange={(e) => setName(e.target.value)} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
+                  <input type="text" placeholder="Full Name (*)" required value={name} onChange={(e) => setName(e.target.value)} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
                 </div>
               )}
 
               {!isLogin && !showForgotPassword && (
-                <div style={{ position: 'relative' }}>
-                  <Phone size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                  <input type="tel" placeholder="Mobile Number (with country code)" value={mobile} onChange={(e) => setMobile(e.target.value)} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div style={{ 
+                    width: '70px', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                    background: '#f1f5f9', border: '2px solid #e2e8f0', borderRadius: '12px',
+                    fontWeight: '600', color: '#64748b'
+                  }}>
+                    +91
+                  </div>
+                  <div style={{ position: 'relative', flex: 1 }}>
+                    <Phone size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                    <input type="tel" placeholder="Mobile Number" value={mobile} onChange={(e) => setMobile(e.target.value)} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
+                  </div>
                 </div>
               )}
 
@@ -260,7 +269,7 @@ function Login() {
               )}
               <div style={{ position: 'relative' }}>
                 <Mail size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                <input type="email" placeholder="Email Address" required={!mobile} value={email} onChange={(e) => setEmail(e.target.value)} disabled={otpSent} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
+                <input type="email" placeholder={`Email Address ${!isLogin ? '(*)' : ''}`} required={!mobile} value={email} onChange={(e) => setEmail(e.target.value)} disabled={otpSent} style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
               </div>
               
               {useOtp && otpSent && (
@@ -273,7 +282,7 @@ function Login() {
               {!showForgotPassword && !useOtp && (
                 <div style={{ position: 'relative' }}>
                   <Lock size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
-                  <input type="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
+                  <input type="password" placeholder={`Password ${!isLogin ? '(*)' : ''}`} required value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" style={{ width: '100%', padding: '1rem 1rem 1rem 3rem', background: '#f8fafc', border: '2px solid #e2e8f0', borderRadius: '12px', outline: 'none' }} />
                 </div>
               )}
               <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', marginTop: '0.5rem', height: '50px' }}>
