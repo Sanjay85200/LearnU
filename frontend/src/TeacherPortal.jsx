@@ -11,6 +11,7 @@ function TeacherPortal() {
   
   // New Test form
   const [newTestName, setNewTestName] = useState('');
+  const [newTimeLimit, setNewTimeLimit] = useState(60);
   
   // New Question form
   const [question, setQuestion] = useState('');
@@ -40,7 +41,11 @@ function TeacherPortal() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       const { data, error } = await supabase.from('tests').insert([
-        { test_name: newTestName, created_by: user?.id }
+        { 
+          test_name: newTestName, 
+          created_by: user?.id,
+          time_limit: parseInt(newTimeLimit) || 60
+        }
       ]).select();
       if (error) throw error;
       setNewTestName('');
@@ -167,6 +172,16 @@ function TeacherPortal() {
                   style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}
                 />
               </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.4rem' }}>Duration (Minutes)</label>
+                <input 
+                  type="number" 
+                  value={newTimeLimit} 
+                  onChange={(e) => setNewTimeLimit(e.target.value)} 
+                  placeholder="60" 
+                  style={{ width: '100%', padding: '0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                />
+              </div>
               <button type="submit" className="btn-primary" disabled={loading}>
                 {loading ? 'Creating...' : 'Create Test'}
               </button>
@@ -181,6 +196,7 @@ function TeacherPortal() {
                   <thead>
                     <tr style={{ textAlign: 'left', borderBottom: '2px solid var(--bg-light)' }}>
                       <th style={{ padding: '1rem' }}>Name</th>
+                      <th style={{ padding: '1rem' }}>Time</th>
                       <th style={{ padding: '1rem' }}>Created</th>
                       <th style={{ padding: '1rem' }}>Actions</th>
                     </tr>
@@ -189,6 +205,7 @@ function TeacherPortal() {
                     {tests.map(test => (
                       <tr key={test.id} style={{ borderBottom: '1px solid var(--bg-light)' }}>
                         <td style={{ padding: '1rem' }}>{test.test_name}</td>
+                        <td style={{ padding: '1rem', fontSize: '0.85rem' }}>{test.time_limit || 60}m</td>
                         <td style={{ padding: '1rem', fontSize: '0.85rem' }}>{test.created_at ? new Date(test.created_at).toLocaleDateString() : 'N/A'}</td>
                         <td style={{ padding: '1rem', display: 'flex', gap: '0.5rem', position: 'relative' }}>
                            <button onClick={() => { setSelectedTestId(test.id); setActiveTab('questions'); }} className="btn-secondary" style={{ padding: '0.4rem 0.8rem' }}>Add Qs</button>

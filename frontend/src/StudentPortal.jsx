@@ -23,6 +23,11 @@ function StudentPortal() {
     const fetchQuestions = async () => {
       setLoading(true);
       try {
+        const { data: testData } = await supabase.from('tests').select('time_limit').eq('id', testId).single();
+        if (testData?.time_limit) {
+          setTimeLeft(testData.time_limit * 60);
+        }
+
         const { data, error } = await supabase
           .from('questions')
           .select('*')
